@@ -1,7 +1,7 @@
-package com.example
+package com.example.zero
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-import com.example.Greeter.Greet
+import com.example.zero.Greeter.Greet
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class QuickstartSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {

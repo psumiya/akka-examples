@@ -1,8 +1,7 @@
-package com.example
+package com.example.zero
 
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
+import akka.actor.typed.{ActorSystem, Behavior}
 
 /**
  * To create an actor, simple specify a behavior when it receives a message.
