@@ -1,10 +1,9 @@
 # akka-examples
 ## Simple Examples for Akka
 
-This repository started from the [Lightbend's Akka Quickstart](https://developer.lightbend.com/guides/akka-quickstart-scala) example.
+This repository started as a clone of the [Lightbend's Akka Quickstart](https://developer.lightbend.com/guides/akka-quickstart-scala) example.
 
-I have found the content and examples on Akka's site to require several re-readings to grasp a concept. The goal for this repository 
-is to provide an alternative approach to get introduced to actors.
+The goal for this repository is to provide simpler, bite-size examples to get introduced to akka.
 
 ## How to navigate the examples?
 The examples are packaged in increasing order of complexity based on the package names, thus com.example.zero is the starting point, i.e. most simple.
