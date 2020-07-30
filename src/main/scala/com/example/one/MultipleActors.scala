@@ -8,9 +8,12 @@ import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
  * <ol>
  *   <li>MultipleActors bootstraps the processing system</li>
  *   <li>GreeterBots creates a Greeter actor, and a GreeterBot actor</li>
- *   <li>GreeterBots sends a greet message to the greeter actor</li>
- *   <li></li>
+ *   <li>GreeterBots triggers a greet message to the greeter actor, while setting the sender of that message as the GreeterBot actor</li>
+ *   <li>When Greeter actor replies, the reply is received by the GreeterBot actor. The behavior of this actor is set
+ *   to keep sending a new message to the Greeter actor until a configured max is hit</li>
  * </ol>
+ * The max counter is a simple incrementer without any explicit thread-safety magic around it.
+ * All messages are being exchanged in a multi-threaded way, without requiring us to explicitly use any thread-safe objects or concurrency best practices.
  */
 object Greeter {
 
@@ -38,8 +41,8 @@ object Greeter {
    * @return the greeter behavior
    */
   def apply(): Behavior[Greet] = Behaviors.receive { (context, message) =>
-    context.log.info("Received Message {} in Greeter Actor {}.", message.whom, context.self)
-    context.log.info("Send a Greeted message to {} from {}", message.replyTo, context.self)
+    context.log.info("Hello {}!", message.whom)
+    context.log.info("2. Send a reply for message {} from {} to {}", message.whom, context.self, message.replyTo)
     message.replyTo ! Greeted(message.whom, context.self)
     Behaviors.same
   }
@@ -63,11 +66,11 @@ object GreeterBot {
   def define(greetingCounter: Int, max: Int): Behavior[Greeter.Greeted] =
     Behaviors.receive { (context, message) =>
       val n = greetingCounter + 1
-      context.log.info("Received Message {} for {} in Greeter Bot Actor {}.", n, message.whom, context.self)
+      context.log.info("Received Greeting {} for {}", n, message.whom)
       if (n == max) {
         Behaviors.stopped
       } else {
-        context.log.info("Send a greet message {} to the greeter actor {}, with the replyTo address being the bot actor {}", message.whom, message.from, context.self)
+        context.log.info("3. Send a message {} from {} to {}", message.whom, context.self, message.from)
         message.from ! Greeter.Greet(message.whom, context.self)
         define(n, max)
       }
@@ -89,7 +92,7 @@ object GreeterBots {
       Behaviors.receiveMessage { message =>
         // Create the bot actors
         val replyTo = context.spawn(GreeterBot(), message.systemName)
-        context.log.info("Send a greet message {} to the greeter actor {}, with the replyTo address being the bot actor {}", message.systemName, greeter, replyTo)
+        context.log.info("1. Send a message {} from {} to {} when in {}", message.systemName, replyTo, greeter, context.self)
         greeter ! Greeter.Greet(message.systemName, replyTo)
         Behaviors.stopped
       }
@@ -106,7 +109,7 @@ object GreeterBots {
 object MultipleActors extends App {
 
   val actorSystem = ActorSystem(GreeterBots(), "GreeterBots")
-  actorSystem ! GreeterBots.Launch("Alpha")
+  actorSystem ! GreeterBots.Launch("Charlie")
 
 }
 
