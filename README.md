@@ -1,3 +1,5 @@
+## This repository is archived and not maintained anymore.
+
 # akka-examples
 ## Simple Examples for Akka
 
